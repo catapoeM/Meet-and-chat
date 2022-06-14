@@ -23,6 +23,10 @@ router.use(session({
   }
 }))
 
+router.get('/', (req, res) => {
+  res.redirect('/register')
+})
+
 router.get('/register', (req, res) => {
   res.render('register')
 })
