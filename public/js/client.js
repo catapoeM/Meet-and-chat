@@ -54,16 +54,34 @@ form.addEventListener('submit', function(e) {
 	}
 });
 
+let likeId = 1
 //4- this event is received to be written down. (displaied)
 socket.on('chat message', function(data) {
 	var item = document.createElement('li');
 	item.textContent = '(' + data.time + ') ' + data.name + ": " + data.msg;
+	let like = document.createElement('li')
+	like.setAttribute('id', likeId)
+	++likeId
+	like.innerText = 'Like'
+	like.style.cursor = 'pointer';
+	like.style.color = 'blue'
+	like.addEventListener("click", function() {
+		like.setAttribute('likesNr', 0)
+		upVotes(like)
+	});
+	item.appendChild(like)
 	message.appendChild(item);
 	const messagesContainer = document.getElementById('messagesContainer')
 	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
 		messagesContainer.scrollTop = messagesContainer.scrollHeight
 	}
 });
+	
+function upVotes(like) {
+	let id = like.getAttribute('id')
+	alert(id)
+	socket.emit('commentLiked', id)
+}
 
 function userTyping() {
 	let name = userName

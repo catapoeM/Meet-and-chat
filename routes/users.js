@@ -24,7 +24,7 @@ router.use(session({
 }))
 
 router.get('/', (req, res) => {
-  res.redirect('/register')
+  res.redirect('/login')
 })
 
 router.get('/register', (req, res) => {

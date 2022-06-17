@@ -33,19 +33,22 @@ io.on('connection', (socket) => {
 		let time = today.getHours() + ":" + today.getMinutes();
 		name = user[socket.id]
 		//3- this emits to the client what has been received and the client writes it down
-		io.emit('chat message', {name: name, msg: msg, time: time})
+		io.emit('chat message', {name: name, msg: msg, time: time, id: socket.id})
 		console.log('(' + time + ') ' + name + ': ' + msg)
 	})
 
 	socket.on('is typing', (userName) => {
-		console.log(userName + ' is typing ...')
 		io.emit('is typing', {userName})
 	})
 
 	socket.on('remove typing', (userName) => {
-		console.log(userName + ' removing')
 		io.emit('remove typing', {userName})
 	})
+
+	socket.on('commentLiked', (id) => {
+		console.log(user[socket.id] + ' liked the ' + id + 'th comment')
+	})
+	
 });
 // end of socket.io logic
 
