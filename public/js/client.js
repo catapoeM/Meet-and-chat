@@ -79,7 +79,7 @@ socket.on('chat message', function(data) {
 	
 function upVotes(like) {
 	let id = like.getAttribute('id')
-	alert(id)
+	//alert(id)
 	socket.emit('commentLiked', id)
 }
 

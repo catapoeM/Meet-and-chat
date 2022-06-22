@@ -44,9 +44,25 @@ io.on('connection', (socket) => {
 	socket.on('remove typing', (userName) => {
 		io.emit('remove typing', {userName})
 	})
-
+	const likesOfComments = []
+	// search throw the list and find if liked exists. If not, add otherwise don't
 	socket.on('commentLiked', (id) => {
 		console.log(user[socket.id] + ' liked the ' + id + 'th comment')
+		likesOfComments.push([id, user[socket.id]])
+		// loop the outer array
+for (let i = 0; i < likesOfComments.length; i++) {
+	// get the size of the inner array
+	var innerArrayLength = likesOfComments[i].length;
+	// loop the inner array
+	for (let j = 0; j < innerArrayLength; j++) {
+			console.log('[' + i + ',' + j + '] = ' + likesOfComments[i][j]);
+	}
+}
+		
+		
+		
+		
+		
 	})
 	
 });
