@@ -30,23 +30,26 @@ router.use(session({
 }))
 const store = new MemoryStore
 
-const redirectLogin = (req, res, next) => {
-
-  let s = ''
-  if (s) {
-    res.redirect('/login')
-  }else {
+const checkAuth = (req, res, next) => {
+  const userSession = req.session.user;
+  console.log(userSession + ' userSession checkAuth')
+  if (userSession) {
     next()
+  }else {
+    console.log(' return login')
+    return res.redirect('/login')
   }
 }
 
-const redirectHome = (req, res, next) => {
-  if (req.session.userId) {
-    let userId = req.session.userId
-    res.redirect(`/user/${userId}`)
-  }else {
-    next()
-  }
+const deleteSession = (req, res, next) => {
+  req.session.destroy(function(err) {
+    if (err) {
+      console.log(err)
+    }else {
+      console.log(' session deleted')
+      next()
+    }
+  })
 }
 
 router.get('/', (req, res) => {
@@ -107,23 +110,13 @@ router.post('/login', (req, res) => {
       console.log('err: ' + err)
     }
     if (found == null) {
-      res.render('login', { errorMsg: 'Username does not exist. Please register one!' } )
-      return
+      return res.render('login', { errorMsg: 'Username does not exist. Please register one!' } )
+      
     }try {
       const match = await bcrypt.compare(user.pass, found.pass)
       if (match) {
-        console.log(req.sessionID + ' sessionID 1')
-        let userSession = {sid: req.sessionID, uid: found.id, uName: found.name}
-        let sessionId = JSON.stringify(userSession.sid)
-        req.session.user = sessionId
-        store.set(sessionId, userSession, function(err){
-          if (err) {
-            console.log(err + ' save store err')
-          }else if (!err) {
-            console.log(sessionId + ' saved STORE sid 1')
-            console.log(userSession.uid + ' saved STORE uid 1')
-          }
-        })
+        req.session.user = req.sessionID
+        console.log(req.session.user + ' sessionID 1')
         return res.redirect(`/user/${found.id}`)
       }else if (!match) {
         res.render('login', { errorMsg: 'Incorrect password. Please try again!' } )
@@ -134,49 +127,27 @@ router.post('/login', (req, res) => {
   })
 })
 
-router.get('/user/:id', async (req, res) => {
-  console.log(req.sessionID + ' sessionID 2')
-  let sessionId = JSON.stringify(req.sessionID)
-  store.get(sessionId, function(err, session) {
-    if (!err) {
-      console.log(JSON.stringify(session) + ' store.get session ')
-    }else if (err) {
-      console.log(err + ' store.get err')
-    }
-  })
+router.get('/user/:id', checkAuth, async (req, res) => {
   try {
     let user = await userSchema.findById(req.params.id)
-    res.render('user', {user: user.name})
+    return res.render('user', {user: user.name})
   }catch(err) {
-    res.render('login', { errorMsg: err + ' err 2'} )
+    return res.render('login', { errorMsg: err + ' err 2'} )
   }
 })
 
-router.get('/logout', (req, res) => {
-  let user = req.session.user
-  console.log(user.sid + ' sid 3')
-  let userIdString = JSON.stringify(user.sid)
-  console.log(userIdString + ' userSID string 3')
-  store.destroy(userIdString, function(err) {
-    if (err) {
-      console.log(err + ' destroy store err')
-    }else if (!err) {
-      console.log(' session destroyed!!!')
-    }
-  })
-  req.session.destroy()
-  res.clearCookie(SESS_NAME)
+router.get('/logout', checkAuth, deleteSession, (req, res) => {
   return res.redirect('/login')
 })
 
-router.delete('/user/:id', async (req, res) => {
+router.delete('/user/:id', checkAuth, deleteSession, async (req, res) => {
   try {
     let user = await userSchema.findById(req.params.id)
     await user.remove()
     console.log("user with info -" + user + "has been deleted!")
-    
+    return res.redirect('/login')
   }catch(err) {
-      console.log(err)
+    console.log(err)
   }
 })
 
