@@ -41,10 +41,31 @@ const checkAuth = (req, res, next) => {
   }
 }
 
+const checkLoggedIn = (req, res, next) => {
+  try {
+    if (req.session.user) {
+    store.get(req.session.user, function(err, session) {
+      if (err) {
+        console.log(err)
+      }else if (session) {
+        const userId = session.uid
+        console.log(userId + ' userId ***')
+        return res.redirect(`/user/${userId}`)
+      }
+    })
+    }else {
+      next()
+    }
+  }catch(err) {
+    console.log(err + ' checkLoggedIn ERR')
+  }
+}
+
 const deleteSession = (req, res, next) => {
   req.session.destroy(function(err) {
     if (err) {
       console.log(err)
+      return res.render('login', { errorMsg: err } )
     }else {
       console.log(' session deleted')
       next()
@@ -52,15 +73,15 @@ const deleteSession = (req, res, next) => {
   })
 }
 
-router.get('/', (req, res) => {
+router.get('/', checkLoggedIn, (req, res) => {
   res.redirect('/login')
 })
 
-router.get('/register', (req, res) => {
+router.get('/register', checkLoggedIn, (req, res) => {
   res.render('register')
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', checkLoggedIn, async (req, res) => {
   const user = {
     name: req.body.name,
     pass: req.body.psw
@@ -93,18 +114,18 @@ router.post('/register', async (req, res) => {
   console.log(allUsers)
 })
 
-router.get('/login', (req, res) => {
+router.get('/login', checkLoggedIn, (req, res) => {
   res.render('login')
 })
 
-router.post('/login', (req, res) => {
+router.post('/login', checkLoggedIn, (req, res) => {
   const user = {
     name: req.body.name,
     pass: req.body.psw
   }
   //await userSchema.deleteMany()
   // "i" from RegExp stands for insensitive case 
-  userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, async function (err, found) {
+  userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, function (err, found) {
     console.log(found + " found")
     if (err) {
       console.log('err: ' + err)
@@ -113,11 +134,24 @@ router.post('/login', (req, res) => {
       return res.render('login', { errorMsg: 'Username does not exist. Please register one!' } )
       
     }try {
-      const match = await bcrypt.compare(user.pass, found.pass)
+      const match = bcrypt.compare(user.pass, found.pass)
       if (match) {
-        req.session.user = req.sessionID
-        console.log(req.session.user + ' sessionID 1')
-        return res.redirect(`/user/${found.id}`)
+        req.session.save(function(err) {
+          if (err) {
+            return res.render('login', { errorMsg: err } )
+          }else {
+            req.session.user = req.sessionID
+            const userSession = {sid: req.sessionID, uid: found.id, name: found.name}
+            store.set(req.sessionID, userSession, function(err) {
+              if (err) {
+                return res.render('login', { errorMsg: err } )
+              }else {
+                console.log(req.session.user + ' sessionID 1')
+                return res.redirect(`/user/${found.id}`)
+              }
+            })
+          }
+        })
       }else if (!match) {
         res.render('login', { errorMsg: 'Incorrect password. Please try again!' } )
       }
@@ -129,6 +163,13 @@ router.post('/login', (req, res) => {
 
 router.get('/user/:id', checkAuth, async (req, res) => {
   try {
+    store.get(req.session.user, function(err, session) {
+      if (err) {
+        console.log(err)
+      }else if (session) {
+        console.log(JSON.stringify(session) + ' user session ***')
+      }
+    })
     let user = await userSchema.findById(req.params.id)
     return res.render('user', {user: user.name})
   }catch(err) {
