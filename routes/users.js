@@ -81,7 +81,7 @@ router.get('/register', checkLoggedIn, (req, res) => {
   res.render('register')
 })
 
-router.post('/register', checkLoggedIn, async (req, res) => {
+router.post('/register', checkLoggedIn, (req, res) => {
   const user = {
     name: req.body.name,
     pass: req.body.psw
@@ -90,7 +90,7 @@ router.post('/register', checkLoggedIn, async (req, res) => {
   // "i" from RegExp stands for insensitive case
   userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, async function(err, found) {
     if (err) {
-      res.render('register', { errorMsg: err })
+      return res.render('register', { errorMsg: err })
     }
     else if (!err && found != null) {
       res.render('register', { errorMsg: 'The username is already registered. Please choose another one!' } )
@@ -104,17 +104,17 @@ router.post('/register', checkLoggedIn, async (req, res) => {
         })
         newUser.save()
         console.log(newUser)
-        res.render('register', { msg: 'You are successfully registered! You can now log in' })
+        return res.render('register', { msg: 'You are successfully registered! You can now log in' })
       }else if (found == null && user.pass != repeatPass) {
-        res.render('register', { errorMsg: 'The "Repeat Password" must be the same as the "Password"' })
+        return res.render('register', { errorMsg: 'The "Repeat Password" must be the same as the "Password"' })
       }
     }catch(err) {
       return res.render('register', { errorMsg: err })
     }
   })
   // Show all the registered users
-  const allUsers = await userSchema.find();
-  console.log(allUsers)
+  //const allUsers = await userSchema.find();
+  //console.log(allUsers)
 })
 
 router.get('/login', checkLoggedIn, (req, res) => {
@@ -181,10 +181,6 @@ router.get('/user/:id', checkAuth, async (req, res) => {
 })
 
 router.get('/logout', checkAuth, deleteSession, (req, res) => {
-  return res.redirect('/login')
-})
-
-router.post('/logout', checkAuth, deleteSession, (req, res) => {
   return res.redirect('/login')
 })
 
