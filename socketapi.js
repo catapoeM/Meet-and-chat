@@ -49,6 +49,7 @@ io.on('connection', (socket) => {
 	socket.on('commentLiked', (id) => {
 		console.log(user[socket.id] + ' liked the ' + id + 'th comment')
 		likesOfComments.push([id, user[socket.id]])
+		io.emit('refreshLikes', {id: id})
 		// loop the outer array
 for (let i = 0; i < likesOfComments.length; i++) {
 	// get the size of the inner array

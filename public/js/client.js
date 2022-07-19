@@ -91,6 +91,16 @@ function upVotes(like) {
 	socket.emit('commentLiked', id)
 }
 
+socket.on('refreshLikes', function(data) {
+	alert('refreshed likes id ' + data.id)
+	alert(message.children.length)
+	const likesCollection = message.childNodes[0].children
+	for(let i = 0; i < likesCollection.length; ++i) {
+		if (i == data.id - 1)
+		likesCollection[i].innerText = ' likes 1'
+	}
+})
+
 function userTyping() {
 	let name = userName
 	let val = 0;
