@@ -28,12 +28,11 @@ router.use(session({
     checkPeriod: 86400000 // prune expired entries every 24h
   })
 }))
-const store = new MemoryStore
+let store = new MemoryStore
 
 const checkAuth = (req, res, next) => {
-  const userSession = req.session.user;
-  console.log(userSession + ' userSession checkAuth')
-  if (userSession) {
+  console.log(req.session.user + ' userSession checkAuth')
+  if (req.session.user) {
     next()
   }else {
     console.log(' return login')
@@ -42,26 +41,30 @@ const checkAuth = (req, res, next) => {
 }
 
 const checkLoggedIn = (req, res, next) => {
-  try {
-    if (req.session.user) {
-    store.get(req.session.user, function(err, session) {
-      if (err) {
-        console.log(err)
-      }else if (session) {
-        const userId = session.uid
-        console.log(userId + ' userId ***')
-        return res.redirect(`/user/${userId}`)
-      }
-    })
-    }else {
-      next()
+  if (req.session.user) {
+  store.get(req.session.user, function(err, session) {
+    if (err) {
+      console.log(err)
+    }else if (session) {
+      const userId = session.uid
+      console.log(userId + ' userId ***')
+      return res.redirect(`/user/${userId}`)
     }
-  }catch(err) {
-    console.log(err + ' checkLoggedIn ERR')
+  })
+  }else {
+    next()
   }
 }
 
 const deleteSession = (req, res, next) => {
+  let userSession = req.session.user
+  store.destroy(userSession, function(err) {
+    if (err) {
+      return res.render('login', { errorMsg: err } )
+    }else {
+      console.log(userSession + ' destroyed from store')
+    }
+  })
   req.session.destroy(function(err) {
     if (err) {
       console.log(err)
@@ -118,7 +121,7 @@ router.post('/register', checkLoggedIn, (req, res) => {
 })
 
 router.get('/login', checkLoggedIn, (req, res) => {
-  res.render('login')
+  return res.render('login')
 })
 
 router.post('/login', checkLoggedIn, (req, res) => {
@@ -128,7 +131,7 @@ router.post('/login', checkLoggedIn, (req, res) => {
   }
   //await userSchema.deleteMany()
   // "i" from RegExp stands for insensitive case 
-  userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, function (err, found) {
+  userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, async function (err, found) {
     console.log(found + " found")
     if (err) {
       console.log('err: ' + err)
@@ -137,7 +140,7 @@ router.post('/login', checkLoggedIn, (req, res) => {
       return res.render('login', { errorMsg: 'Username does not exist. Please register one!' } )
       
     }try {
-      const match = bcrypt.compare(user.pass, found.pass)
+      const match = await bcrypt.compare(user.pass, found.pass)
       if (match) {
         req.session.save(function(err) {
           if (err) {
@@ -156,25 +159,26 @@ router.post('/login', checkLoggedIn, (req, res) => {
           }
         })
       }else if (!match) {
-        res.render('login', { errorMsg: 'Incorrect password. Please try again!' } )
+        return res.render('login', { errorMsg: 'Incorrect password. Please try again!' } )
       }
     }catch(err) {
-      res.render('login', { errorMsg: err } )
+      return res.render('login', { errorMsg: err } )
     }
   })
 })
 
-router.get('/user/:id', checkAuth, async (req, res) => {
+router.get('/user/:id', checkAuth, (req, res) => {
   try {
-    store.get(req.session.user, function(err, session) {
+    store.get(req.session.user, async function(err, session) {
       if (err) {
         console.log(err)
+        return res.render('login', { errorMsg: err } )
       }else if (session) {
         console.log(JSON.stringify(session) + ' user session ***')
+        let user = await userSchema.findById(req.params.id)
+        return res.render('user', {user: user.name})
       }
     })
-    let user = await userSchema.findById(req.params.id)
-    return res.render('user', {user: user.name})
   }catch(err) {
     return res.render('login', { errorMsg: err + ' err 2'} )
   }

@@ -58,11 +58,6 @@ for (let i = 0; i < likesOfComments.length; i++) {
 			console.log('[' + i + ',' + j + '] = ' + likesOfComments[i][j]);
 	}
 }
-		
-		
-		
-		
-		
 	})
 	
 });
