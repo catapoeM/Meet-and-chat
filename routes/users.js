@@ -89,7 +89,10 @@ router.post('/register', checkLoggedIn, async (req, res) => {
   const repeatPass = req.body.pswRepeat
   // "i" from RegExp stands for insensitive case
   userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, async function(err, found) {
-    if (found != null) {
+    if (err) {
+      res.render('register', { errorMsg: err })
+    }
+    else if (!err && found != null) {
       res.render('register', { errorMsg: 'The username is already registered. Please choose another one!' } )
     }try {
       if (found == null && user.pass == repeatPass) {
@@ -106,7 +109,7 @@ router.post('/register', checkLoggedIn, async (req, res) => {
         res.render('register', { errorMsg: 'The "Repeat Password" must be the same as the "Password"' })
       }
     }catch(err) {
-      res.render('register', { errorMsg: err })
+      return res.render('register', { errorMsg: err })
     }
   })
   // Show all the registered users
@@ -178,6 +181,10 @@ router.get('/user/:id', checkAuth, async (req, res) => {
 })
 
 router.get('/logout', checkAuth, deleteSession, (req, res) => {
+  return res.redirect('/login')
+})
+
+router.post('/logout', checkAuth, deleteSession, (req, res) => {
   return res.redirect('/login')
 })
 
