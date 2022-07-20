@@ -62,13 +62,15 @@ form.addEventListener('submit', function(e) {
 	}
 });
 
-let likeId = 1
+let likeId = 0
+let likesAmount = 0
 //4- this event is received to be written down. (displaied)
 socket.on('chat message', function(data) {
 	var item = document.createElement('li');
 	item.textContent = '(' + data.time + ') ' + data.name + ": " + data.msg;
 	let like = document.createElement('li')
 	like.setAttribute('id', likeId)
+	like.setAttribute('likesAmount', likesAmount)
 	++likeId
 	like.innerText = 'Like'
 	like.style.cursor = 'pointer';
@@ -92,13 +94,16 @@ function upVotes(like) {
 }
 
 socket.on('refreshLikes', function(data) {
-	alert('refreshed likes id ' + data.id)
-	alert(message.children.length)
-	const likesCollection = message.childNodes[0].children
-	for(let i = 0; i < likesCollection.length; ++i) {
-		if (i == data.id - 1)
-		likesCollection[i].innerText = ' likes 1'
-	}
+	let pos = data.id
+	alert(pos + ' pos')
+	const likesCollection = message.childNodes[pos].children
+	alert(likesCollection + ' likesCollection')
+	let likesA = likesCollection[0].getAttribute('likesAmount')
+	alert(likesA + ' likesCollikesAlection')
+	++likesA
+	alert(likesA + ' likesA')
+	likesCollection[0].innerText = likesA + ' Likes'
+	likesCollection[0].setAttribute('likesAmount', likesA)
 })
 
 function userTyping() {
