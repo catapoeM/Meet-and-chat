@@ -5,12 +5,16 @@
 - Someone is typing
 
 - List with connected people
+
+- Logout button (delete session)
+
+- Delete account (detele session + account deleted from DB)
 # Future functions:
-- Comment upvotes
+- Comment upvotes (Half way done)
 
 - Chat emoji
 
-- Real time each person location
+- Real time location
 
 # Deutsch
 
@@ -19,6 +23,10 @@
 - Jemand tippt
 
 - Liste mit verbundenen Personen
+
+- Logout-Button (Session löschen)
+
+-  Account löschen (Session löschen + Account aus DB löschen)
 # Zukünftige Funktionen:
 - Kommentar-Upvotes
 
