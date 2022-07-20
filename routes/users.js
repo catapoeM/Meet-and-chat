@@ -30,6 +30,9 @@ router.use(session({
 }))
 let store = new MemoryStore
 
+// Checks if the user is authenticated or not
+// If user auth then it goes next and get the user routes and user informations from the DB.
+// If not then redirects back to the login page
 const checkAuth = (req, res, next) => {
   console.log(req.session.user + ' userSession checkAuth')
   if (req.session.user) {
@@ -40,6 +43,8 @@ const checkAuth = (req, res, next) => {
   }
 }
 
+// If user is already logged in then always user is redirected to the user main page.
+// If not then it simple goes to that specific page "ex: register / login"
 const checkLoggedIn = (req, res, next) => {
   if (req.session.user) {
   store.get(req.session.user, function(err, session) {
@@ -56,6 +61,7 @@ const checkLoggedIn = (req, res, next) => {
   }
 }
 
+// It is used to delete session in 2 cases: 1. Delete account 2. Log out.
 const deleteSession = (req, res, next) => {
   let userSession = req.session.user
   store.destroy(userSession, function(err) {
