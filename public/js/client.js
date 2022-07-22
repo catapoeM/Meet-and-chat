@@ -14,6 +14,7 @@ let input = document.getElementById('input');
 let typing = document.getElementById('typing')
 let userName = document.getElementById('user').innerHTML
 
+// Emit to the server the user connection
 socket.emit('userConnect', userName)
 
 function mainLoad() {
@@ -50,7 +51,6 @@ socket.on('user left', function(data) {
 		}
 	}
 })
-
 
 form.addEventListener('submit', function(e) {
 	e.preventDefault();

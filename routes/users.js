@@ -34,11 +34,11 @@ let store = new MemoryStore
 // If user auth then it goes next and get the user routes and user informations from the DB.
 // If not then redirects back to the login page
 const checkAuth = (req, res, next) => {
-  console.log(req.session.user + ' userSession checkAuth')
+  //console.log(req.session.user + ' userSession checkAuth')
   if (req.session.user) {
     next()
   }else {
-    console.log(' return login')
+    //console.log(' return login')
     return res.redirect('/login')
   }
 }
@@ -52,7 +52,7 @@ const checkLoggedIn = (req, res, next) => {
       console.log(err)
     }else if (session) {
       const userId = session.uid
-      console.log(userId + ' userId ***')
+      //console.log(userId + ' userId ***')
       return res.redirect(`/user/${userId}`)
     }
   })
@@ -93,7 +93,8 @@ router.get('/register', checkLoggedIn, (req, res) => {
 router.post('/register', checkLoggedIn, (req, res) => {
   const user = {
     name: req.body.name,
-    pass: req.body.psw
+    pass: req.body.psw,
+    birthday: req.body.birthday
   }
   const repeatPass = req.body.pswRepeat
   // "i" from RegExp stands for insensitive case
@@ -109,7 +110,8 @@ router.post('/register', checkLoggedIn, (req, res) => {
         const hashedPassword = await bcrypt.hash(user.pass, 10)
         const newUser = userSchema({
           name: user.name,
-          pass: hashedPassword
+          pass: hashedPassword,
+          birthday: user.birthday
         })
         newUser.save()
         console.log(newUser)
@@ -135,7 +137,7 @@ router.post('/login', checkLoggedIn, (req, res) => {
     name: req.body.name,
     pass: req.body.psw
   }
-  //await userSchema.deleteMany()
+  // await userSchema.deleteMany()
   // "i" from RegExp stands for insensitive case 
   userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, async function (err, found) {
     console.log(found + " found")
@@ -180,7 +182,7 @@ router.get('/user/:id', checkAuth, (req, res) => {
         console.log(err)
         return res.render('login', { errorMsg: err } )
       }else if (session) {
-        console.log(JSON.stringify(session) + ' user session ***')
+        //console.log(JSON.stringify(session) + ' user session ***')
         let user = await userSchema.findById(req.params.id)
         return res.render('user', {user: user.name})
       }
