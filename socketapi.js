@@ -3,11 +3,20 @@ const socketapi = {
     io: io
 };
 
+const messagesSchema = require('./models/messages')
+
 // Add your socket.io logic here!
 //1- "io.on" sends events from server
 
 const allUsers = []
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
+	//await messagesSchema.deleteMany()
+	const allMessages = await messagesSchema.find()
+	for (let i = 0; i < allMessages.length; ++i) {
+		// Get all messages from the DB and send to the client
+		io.emit('getAllMessages', {userName: allMessages[i].userName, date: allMessages[i].date, msg: allMessages[i].message})
+		console.log(allMessages[i].userName + ' : ' + allMessages[i].date + ' -> ' + allMessages[i].message)
+	}
 	const user = {}
 	socket.on('userConnect', (name) => {
 		user[socket.id] = name
@@ -28,12 +37,19 @@ io.on('connection', (socket) => {
 	});
 	//2- this receive the "chat message" event emited by client 
 	socket.on('chat message', (name, msg) => {
-		let today = new Date()
-		let time = today.getHours() + ":" + today.getMinutes();
+		const theTime = new Date().toLocaleString('en-AT', {timeZone: 'UTC'})
+		console.log(theTime)
 		name = user[socket.id]
+		const newMessage = messagesSchema({
+			message: msg,
+			userName: name,
+			date: theTime
+		})
+		newMessage.save()
+		console.log(newMessage + ' new message')
 		//3- this emits to the client what has been received and the client writes it down
-		io.emit('chat message', {name: name, msg: msg, time: time, id: socket.id})
-		console.log('(' + time + ') ' + name + ': ' + msg)
+		io.emit('chat message', {name: name, msg: msg, time: theTime, id: socket.id})
+		console.log(theTime + ' Today')
 	})
 
 	socket.on('is typing', (userName) => {

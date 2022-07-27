@@ -67,7 +67,7 @@ let likeId = 0
 socket.on('chat message', function(data) {
 	let likesAmount = 0
 	var item = document.createElement('li');
-	item.textContent = '(' + data.time + ') ' + data.name + ": " + data.msg;
+	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg;
 	let like = document.createElement('li')
 	like.setAttribute('id', likeId)
 	like.setAttribute('likesAmount', likesAmount)
@@ -79,7 +79,15 @@ socket.on('chat message', function(data) {
 		like.setAttribute('likesNr', 0)
 		upVotes(like)
 	});
+	let deleteMessage = document.createElement('button')
+	deleteMessage.innerText = 'Detele'
+	deleteMessage.style.cursor = 'pointer'
+	deleteMessage.style.color = 'red'
+	deleteMessage.addEventListener('click', function() {
+		deleteMsg(deleteMessage)
+	})
 	item.appendChild(like)
+	item.appendChild(deleteMessage)
 	message.appendChild(item);
 	const messagesContainer = document.getElementById('messagesContainer')
 	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
@@ -91,6 +99,12 @@ function upVotes(like) {
 	let id = like.getAttribute('id')
 	//alert(id)
 	socket.emit('commentLiked', id)
+}
+
+function deleteMsg(deleteMessage) {
+	alert('delete msj')
+
+	socket.emit('deleteMessage', deleteMessage)
 }
 
 socket.on('refreshLikes', function(data) {
@@ -131,4 +145,38 @@ socket.on('is typing', function(data) {
 	}else if (!typing.hasChildNodes()) {
 		typing.appendChild(item)
 	}
+})
+
+socket.on('getAllMessages', function(data) {
+	//alert(data.userName + ' ' + data.date + ' ' + data.msg)
+	let likesAmount = 0
+	var item = document.createElement('li');
+	item.textContent = '(' + data.date + ') ' + data.userName + ": " + data.msg;
+	let like = document.createElement('li')
+	like.setAttribute('id', likeId)
+	like.setAttribute('likesAmount', likesAmount)
+	++likeId
+	like.innerText = 'Like'
+	like.style.cursor = 'pointer';
+	like.style.color = 'blue'
+	like.addEventListener("click", function() {
+		like.setAttribute('likesNr', 0)
+		upVotes(like)
+	});
+	let deleteMessage = document.createElement('button')
+	deleteMessage.innerText = 'Detele'
+	deleteMessage.style.cursor = 'pointer'
+	deleteMessage.style.color = 'red'
+	deleteMessage.addEventListener('click', function() {
+		deleteMsg(deleteMessage)
+	})
+	item.appendChild(like)
+	item.appendChild(deleteMessage)
+	message.appendChild(item);
+	const messagesContainer = document.getElementById('messagesContainer')
+	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
+		messagesContainer.scrollTop = messagesContainer.scrollHeight
+	}
+
+	
 })
