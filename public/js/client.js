@@ -155,9 +155,9 @@ socket.on('getAllMessages', function(data) {
 	like.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
 	if (data.likes <= 1) {
-		like.innerText = 'Like ' + data.likes
+		like.innerText = data.likes + ' Like'
 	}else if (data.likes > 1) {
-		like.innerText = 'Likes ' + data.likes
+		like.innerText = data.likes + ' Likes'
 	}
 	
 	like.style.cursor = 'pointer';
