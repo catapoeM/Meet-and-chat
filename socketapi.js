@@ -10,12 +10,12 @@ const messagesSchema = require('./models/messages')
 
 const allUsers = []
 io.on('connection', async (socket) => {
-	//await messagesSchema.deleteMany()
+ // await messagesSchema.deleteMany()
 	const allMessages = await messagesSchema.find()
 	for (let i = 0; i < allMessages.length; ++i) {
 		// Get all messages from the DB and send to the client
-		io.emit('getAllMessages', {userName: allMessages[i].userName, date: allMessages[i].date, msg: allMessages[i].message})
-		console.log(allMessages[i].userName + ' : ' + allMessages[i].date + ' -> ' + allMessages[i].message)
+		io.emit('getAllMessages', {userName: allMessages[i].userName, date: allMessages[i].date, msg: allMessages[i].message, likes: allMessages[i].likes, idMsg: allMessages[i].id})
+		console.log(allMessages[i].userName + ' : ' + allMessages[i].date + ' -> ' + allMessages[i].message + " _idMsg " + allMessages[i].id + " likes " + allMessages[i].likes)
 	}
 	const user = {}
 	socket.on('userConnect', (name) => {
@@ -40,15 +40,17 @@ io.on('connection', async (socket) => {
 		const theTime = new Date().toLocaleString('en-AT', {timeZone: 'UTC'})
 		console.log(theTime)
 		name = user[socket.id]
+		const likes = 0
 		const newMessage = messagesSchema({
 			message: msg,
 			userName: name,
-			date: theTime
+			date: theTime,
+			likes: likes
 		})
 		newMessage.save()
-		console.log(newMessage + ' new message')
+		console.log(newMessage + ' new message - ' + newMessage.id)
 		//3- this emits to the client what has been received and the client writes it down
-		io.emit('chat message', {name: name, msg: msg, time: theTime, id: socket.id})
+		io.emit('chat message', {name: name, msg: msg, time: theTime, idMsg: newMessage.id, likes: newMessage.likes})
 		console.log(theTime + ' Today')
 	})
 
@@ -60,10 +62,16 @@ io.on('connection', async (socket) => {
 		io.emit('remove typing', {userName})
 	})
 
-	// search throw the list and find if liked exists. If not, add otherwise don't
-	socket.on('commentLiked', (id) => {
-		console.log(user[socket.id] + ' liked the ' + id + 'th comment')
-		io.emit('refreshLikes', {id: id})
+	// search throw the list and find if liked exists. If not, add, otherwise don't
+	socket.on('commentLiked', async (id) => {
+		console.log(user[socket.id] + ' liked the ' + id + ' message')
+		const likes = await messagesSchema.findById(id)
+		let nrOfLikes = likes.likes + 1
+		likes.likes = nrOfLikes
+		await likes.save()
+		console.log(nrOfLikes + ' send likes')
+		// messagesSchema.where({ _id: id }).update({ likes: likes})
+		await io.emit('refreshLikes', {id: id, likes: nrOfLikes})
 		// loop the outer array
 	})
 });
