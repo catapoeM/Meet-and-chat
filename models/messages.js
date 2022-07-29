@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
 
-mongoose.set('autoIndex', true)
-
 const messagesSchema = new mongoose.Schema({
   message: String,
   userName: String,

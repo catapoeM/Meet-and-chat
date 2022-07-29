@@ -66,7 +66,6 @@ form.addEventListener('submit', function(e) {
 socket.on('chat message', function(data) {
 	var item = document.createElement('li');
 	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg;
-	alert(data.idMsg)
 	let like = document.createElement('li')
 	like.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
@@ -106,13 +105,14 @@ function deleteMsg(deleteMessage) {
 }
 
 socket.on('refreshLikes', function(data) {
-	const likesCollection = message.childNodes[data.id].children
-	if (data.likes <= 1) {
-		likesCollection[0].innerText = data.likes + ' Like'
-	}else if (data.likes > 1) {
-		likesCollection[0].innerText = data.likes + ' Likes'
+for (let i = 0; i < message.childNodes.length; ++i) {
+	if (message.childNodes[i].children[0].getAttribute('id') == data.id && data.likes <= 1) {
+		message.childNodes[i].children[0].innerText = data.likes + ' Like'
+	}else if (message.childNodes[i].children[0].getAttribute('id') == data.id && data.likes > 1) {
+		message.childNodes[i].children[0].innerText = data.likes + ' Likes'
 	}
-	likesCollection[0].setAttribute('likesAmount', data.likes)
+	message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
+}	
 })
 
 function userTyping() {
@@ -148,13 +148,18 @@ socket.on('is typing', function(data) {
 })
 
 socket.on('getAllMessages', function(data) {
-	//alert(data.userName + ' ' + data.date + ' ' + data.msg)
+	//alert(data.userName + ' ' + data.date + ' ' + data.msg)	
 	var item = document.createElement('li');
 	item.textContent = '(' + data.date + ') ' + data.userName + ": " + data.msg;
 	let like = document.createElement('li')
 	like.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
-	like.innerText = 'Like'
+	if (data.likes <= 1) {
+		like.innerText = 'Like ' + data.likes
+	}else if (data.likes > 1) {
+		like.innerText = 'Likes ' + data.likes
+	}
+	
 	like.style.cursor = 'pointer';
 	like.style.color = 'blue'
 	like.addEventListener("click", function() {
