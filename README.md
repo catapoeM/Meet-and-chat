@@ -9,8 +9,10 @@
 - Logout button (delete session)
 
 - Delete account (detele session + account deleted from DB)
+
+- Comment upvotes (Saved in DB)
+
 # Future functions:
-- Comment upvotes (Half way done)
 
 - Chat emoji
 
