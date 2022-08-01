@@ -154,7 +154,9 @@ socket.on('getAllMessages', function(data) {
 	let like = document.createElement('li')
 	like.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
-	if (data.likes <= 1) {
+	if (data.likes < 1) {
+		like.innerText = 'Like'
+	}else if (data.likes == 1) {
 		like.innerText = data.likes + ' Like'
 	}else if (data.likes > 1) {
 		like.innerText = data.likes + ' Likes'
@@ -180,6 +182,20 @@ socket.on('getAllMessages', function(data) {
 	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
 		messagesContainer.scrollTop = messagesContainer.scrollHeight
 	}
+})
 
-	
+socket.on('alreadyLiked', function(data) {
+	let likeMessageError = document.getElementById('likeMessageError')
+	let alertMessage = document.createElement('h3')
+	alertMessage.innerText = data.messageError
+	alertMessage.style.color = 'red'
+	likeMessageError.appendChild(alertMessage)
+	const timeOut = setTimeout(removeMessage, 3500)
+	function removeMessage() {
+		likeMessageError.removeChild(likeMessageError.firstElementChild)
+		stopTime()
+	}
+	function stopTime() {
+		clearTimeout(timeOut)
+	}
 })

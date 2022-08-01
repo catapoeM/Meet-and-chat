@@ -68,10 +68,15 @@ io.on('connection', async (socket) => {
 		console.log(user[socket.id] + ' liked the ' + id + ' message')
 		const likes = await messagesSchema.findById(id)
 		let found = 0
-		for (let i = 0, leng = likes.whoLiked.length; i < leng; ++i) {
+		for (let i = 0, once = 1, leng = likes.whoLiked.length; i < leng; ++i) {
 			if (likes.whoLiked[i] == user[socket.id]) {
 				found = 1;
-				console.log("You already liked this message!")
+				const messageError = "You already liked this message!"
+				console.log(messageError)
+				if(once == 1) {
+					io.to(socket.id).emit('alreadyLiked', {messageError: messageError})
+					once = 0;
+				}
 			}
 		}
 		// If this user did not like this message, then update.
