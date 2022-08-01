@@ -14,7 +14,7 @@ io.on('connection', async (socket) => {
 	const allMessages = await messagesSchema.find()
 	for (let i = 0; i < allMessages.length; ++i) {
 		// Get all messages from the DB and send to the client
-		io.emit('getAllMessages', {userName: allMessages[i].userName, date: allMessages[i].date, msg: allMessages[i].message, likes: allMessages[i].likes, idMsg: allMessages[i].id})
+		io.to(socket.id).emit('getAllMessages', {userName: allMessages[i].userName, date: allMessages[i].date, msg: allMessages[i].message, likes: allMessages[i].likes, idMsg: allMessages[i].id})
 		console.log(allMessages[i].userName + ' : ' + allMessages[i].date + ' -> ' + allMessages[i].message + " _idMsg " + allMessages[i].id + " likes " + allMessages[i].likes)
 	}
 	const user = {}
@@ -45,7 +45,8 @@ io.on('connection', async (socket) => {
 			message: msg,
 			userName: name,
 			date: theTime,
-			likes: likes
+			likes: likes,
+			whoLiked: []
 		})
 		newMessage.save()
 		console.log(newMessage + ' new message - ' + newMessage.id)
@@ -66,13 +67,28 @@ io.on('connection', async (socket) => {
 	socket.on('commentLiked', async (id) => {
 		console.log(user[socket.id] + ' liked the ' + id + ' message')
 		const likes = await messagesSchema.findById(id)
-		let nrOfLikes = likes.likes + 1
-		likes.likes = nrOfLikes
+		let found = 0
+		for (let i = 0, once = 1, leng = likes.whoLiked.length; i < leng; ++i) {
+			if (likes.whoLiked[i] == user[socket.id]) {
+				found = 1;
+				const messageError = "You already liked this message!"
+				console.log(messageError)
+				if(once == 1) {
+					io.to(socket.id).emit('alreadyLiked', {messageError: messageError})
+					once = 0;
+				}
+			}
+		}
+		// If this user did not like this message, then update.
+		if (found == 0) {
+			likes.whoLiked.push(user[socket.id])
+			let nrOfLikes = likes.likes + 1
+			likes.likes = nrOfLikes
+			console.log(nrOfLikes + ' send likes')
+			await io.emit('refreshLikes', {id: id, likes: nrOfLikes})
+			console.log(likes.whoLiked + ' likes.whoLiked (People who liked this message)')
+		}
 		await likes.save()
-		console.log(nrOfLikes + ' send likes')
-		// messagesSchema.where({ _id: id }).update({ likes: likes})
-		await io.emit('refreshLikes', {id: id, likes: nrOfLikes})
-		// loop the outer array
 	})
 });
 // end of socket.io logic
