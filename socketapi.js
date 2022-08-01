@@ -90,6 +90,16 @@ io.on('connection', async (socket) => {
 		}
 		await likes.save()
 	})
+
+	socket.on('deleteMessage', function(messageId) {
+		messagesSchema.deleteOne({ _id: messageId }, function (err) {
+			if (err) {
+				console.log(err)
+			}else if (!err) {
+				console.log(messageId + ' has been deleted!')
+			}
+		})
+	})
 });
 // end of socket.io logic
 

@@ -67,21 +67,21 @@ socket.on('chat message', function(data) {
 	var item = document.createElement('li');
 	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg;
 	let like = document.createElement('li')
-	like.setAttribute('id', data.idMsg)
+	item.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
 	like.innerText = 'Like'
 	like.style.cursor = 'pointer';
 	like.style.color = 'blue'
 	like.addEventListener("click", function() {
 		like.setAttribute('likesNr', 0)
-		upVotes(like)
+		upVotes(item)
 	});
 	let deleteMessage = document.createElement('button')
 	deleteMessage.innerText = 'Detele'
 	deleteMessage.style.cursor = 'pointer'
 	deleteMessage.style.color = 'red'
 	deleteMessage.addEventListener('click', function() {
-		deleteMsg(deleteMessage)
+		deleteMsg(item)
 	})
 	item.appendChild(like)
 	item.appendChild(deleteMessage)
@@ -92,23 +92,17 @@ socket.on('chat message', function(data) {
 	}
 });
 	
-function upVotes(like) {
-	let id = like.getAttribute('id')
+function upVotes(item) {
+	let id = item.getAttribute('id')
 	//alert(id)
 	socket.emit('commentLiked', id)
 }
 
-function deleteMsg(deleteMessage) {
-	alert('delete msj')
-
-	socket.emit('deleteMessage', deleteMessage)
-}
-
 socket.on('refreshLikes', function(data) {
 for (let i = 0; i < message.childNodes.length; ++i) {
-	if (message.childNodes[i].children[0].getAttribute('id') == data.id && data.likes <= 1) {
+	if (message.childNodes[i].getAttribute('id') == data.id && data.likes <= 1) {
 		message.childNodes[i].children[0].innerText = data.likes + ' Like'
-	}else if (message.childNodes[i].children[0].getAttribute('id') == data.id && data.likes > 1) {
+	}else if (message.childNodes[i].getAttribute('id') == data.id && data.likes > 1) {
 		message.childNodes[i].children[0].innerText = data.likes + ' Likes'
 	}
 	message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
@@ -148,11 +142,10 @@ socket.on('is typing', function(data) {
 })
 
 socket.on('getAllMessages', function(data) {
-	//alert(data.userName + ' ' + data.date + ' ' + data.msg)	
 	var item = document.createElement('li');
 	item.textContent = '(' + data.date + ') ' + data.userName + ": " + data.msg;
 	let like = document.createElement('li')
-	like.setAttribute('id', data.idMsg)
+	item.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
 	if (data.likes < 1) {
 		like.innerText = 'Like'
@@ -166,14 +159,14 @@ socket.on('getAllMessages', function(data) {
 	like.style.color = 'blue'
 	like.addEventListener("click", function() {
 		like.setAttribute('likesNr', 0)
-		upVotes(like)
+		upVotes(item)
 	});
 	let deleteMessage = document.createElement('button')
 	deleteMessage.innerText = 'Detele'
 	deleteMessage.style.cursor = 'pointer'
 	deleteMessage.style.color = 'red'
 	deleteMessage.addEventListener('click', function() {
-		deleteMsg(deleteMessage)
+		deleteMsg(item)
 	})
 	item.appendChild(like)
 	item.appendChild(deleteMessage)
@@ -199,3 +192,16 @@ socket.on('alreadyLiked', function(data) {
 		clearTimeout(timeOut)
 	}
 })
+
+function deleteMsg(item) {
+	for (let i = 0; i < message.childNodes.length; ++i) {
+		const messageId = message.childNodes[i].getAttribute('id')
+		if (messageId == item.getAttribute('id') && messageId != null) {
+			message.childNodes[i].removeAttribute('id')
+			message.childNodes[i].innerHTML = '*Message deleted*'
+			message.childNodes[i].style.color = 'grey'
+			socket.emit('deleteMessage', messageId)
+		}
+	}
+	
+}
