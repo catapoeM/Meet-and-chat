@@ -1,37 +1,53 @@
-# Meet-and-chat
+# Meet-and-chat (English)
 
 -It is an chat application where you have to create an account, then login and chat with other people.
 # Functions:
-- Someone is typing
 
-- List with connected people
+- Create account (saved in DB)
+
+- Log in (verify username + password in DB)
+
+- Delete account (detele session + account deleted from DB)
 
 - Logout button (delete session)
 
-- Delete account (detele session + account deleted from DB)
+- List with connected people
+
+- Someone is typing
 
 - Comment upvotes (Saved in DB)
 
 # Future functions:
 
+- Delete Comment
+
 - Chat emoji
 
 - Real time location
 
-# Deutsch
+# Treffen und chatten (Deutsch)
 
 -Es ist eine Chat-Anwendung, bei der Sie ein Konto erstellen, sich dann anmelden und mit anderen Leuten chatten müssen.
 # Funktionen:
-- Jemand tippt
+
+- Konto erstellen (in DB gespeichert)
+
+- Einloggen (Benutzername + Passwort in DB verifizieren)
+
+- Konto löschen (Sitzung löschen + Konto aus DB gelöscht)
+
+- Logout-Button (Sitzung löschen)
 
 - Liste mit verbundenen Personen
 
-- Logout-Button (Session löschen)
+- Jemand tippt
 
--  Account löschen (Session löschen + Account aus DB löschen)
+- Kommentar-Upvotes (in DB gespeichert)
+
 # Zukünftige Funktionen:
-- Kommentar-Upvotes
 
-- Chat-Emoji
+- Kommentar löschen
 
-- Echtzeit-Standort jeder Person
+- Emoji-Chat
+
+- Standort in Echtzeit
