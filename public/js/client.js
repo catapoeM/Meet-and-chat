@@ -100,12 +100,15 @@ function upVotes(item) {
 
 socket.on('refreshLikes', function(data) {
 for (let i = 0; i < message.childNodes.length; ++i) {
-	if (message.childNodes[i].getAttribute('id') == data.id && data.likes <= 1) {
+	const idMessage = message.childNodes[i].getAttribute('id')
+	if (idMessage == data.id && data.likes <= 1 && idMessage != null) {
 		message.childNodes[i].children[0].innerText = data.likes + ' Like'
-	}else if (message.childNodes[i].getAttribute('id') == data.id && data.likes > 1) {
+		message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
+	}else if (idMessage == data.id && data.likes > 1 && idMessage != null) {
 		message.childNodes[i].children[0].innerText = data.likes + ' Likes'
+		message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
 	}
-	message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
+	
 }	
 })
 
