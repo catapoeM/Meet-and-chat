@@ -35,10 +35,7 @@ socket.on('userConnected', function(data) {
 		item.textContent = allUsers[i];
 		status.appendChild(item)
 	}
-	const onlineContainer = document.getElementById('onlineContainer')
-	if (onlineContainer.scrollHeight > onlineContainer.clientHeight) {
-		onlineContainer.scrollTop = onlineContainer.scrollHeight
-	}
+	scrollDown()
 })
 
 socket.on('user left', function(data) {
@@ -76,21 +73,23 @@ socket.on('chat message', function(data) {
 		like.setAttribute('likesNr', 0)
 		upVotes(item)
 	});
+	item.appendChild(like)
+	message.appendChild(item);
+	scrollDown()
+});
+
+socket.on('deleteMsgButton', function(data) {
 	let deleteMessage = document.createElement('button')
+	deleteMessage.setAttribute('id', data.idMsg)
 	deleteMessage.innerText = 'Detele'
 	deleteMessage.style.cursor = 'pointer'
 	deleteMessage.style.color = 'red'
 	deleteMessage.addEventListener('click', function() {
-		deleteMsg(item)
+		deleteMsg(deleteMessage)
 	})
-	item.appendChild(like)
-	item.appendChild(deleteMessage)
-	message.appendChild(item);
-	const messagesContainer = document.getElementById('messagesContainer')
-	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
-		messagesContainer.scrollTop = messagesContainer.scrollHeight
-	}
-});
+	message.appendChild(deleteMessage)
+	scrollDown()
+})
 	
 function upVotes(item) {
 	let id = item.getAttribute('id')
@@ -99,17 +98,16 @@ function upVotes(item) {
 }
 
 socket.on('refreshLikes', function(data) {
-for (let i = 0; i < message.childNodes.length; ++i) {
-	const idMessage = message.childNodes[i].getAttribute('id')
-	if (idMessage == data.id && data.likes <= 1 && idMessage != null) {
-		message.childNodes[i].children[0].innerText = data.likes + ' Like'
-		message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
-	}else if (idMessage == data.id && data.likes > 1 && idMessage != null) {
-		message.childNodes[i].children[0].innerText = data.likes + ' Likes'
-		message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
-	}
-	
-}	
+	for (let i = 0; i < message.childNodes.length; ++i) {
+		const idMessage = message.childNodes[i].getAttribute('id')
+		if (idMessage == data.id && data.likes <= 1 && idMessage != null) {
+			message.childNodes[i].children[0].innerText = data.likes + ' Like'
+			message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
+		}else if (idMessage == data.id && data.likes > 1 && idMessage != null) {
+			message.childNodes[i].children[0].innerText = data.likes + ' Likes'
+			message.childNodes[i].children[0].setAttribute('likesAmount', data.likes)
+		}
+	}	
 })
 
 function userTyping() {
@@ -174,10 +172,7 @@ socket.on('getAllMessages', function(data) {
 	item.appendChild(like)
 	item.appendChild(deleteMessage)
 	message.appendChild(item);
-	const messagesContainer = document.getElementById('messagesContainer')
-	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
-		messagesContainer.scrollTop = messagesContainer.scrollHeight
-	}
+	scrollDown()
 })
 
 socket.on('alreadyLiked', function(data) {
@@ -199,12 +194,23 @@ socket.on('alreadyLiked', function(data) {
 function deleteMsg(item) {
 	for (let i = 0; i < message.childNodes.length; ++i) {
 		const messageId = message.childNodes[i].getAttribute('id')
-		if (messageId == item.getAttribute('id') && messageId != null) {
+		const tagName = message.childNodes[i].tagName
+		if (messageId == item.getAttribute('id') && messageId != null && tagName != 'BUTTON') {
 			message.childNodes[i].removeAttribute('id')
 			message.childNodes[i].innerHTML = '*Message deleted*'
 			message.childNodes[i].style.color = 'grey'
 			socket.emit('deleteMessage', messageId)
+		}else if (messageId == item.getAttribute('id') && messageId != null && tagName == 'BUTTON') {
+			message.childNodes[i].removeAttribute('id')
+			message.childNodes[i].remove()
+			socket.emit('deleteMessage', messageId)
 		}
 	}
-	
+}
+
+function scrollDown() {
+	const messagesContainer = document.getElementById('messagesContainer')
+	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
+		messagesContainer.scrollTop = messagesContainer.scrollHeight
+	}
 }

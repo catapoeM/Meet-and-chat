@@ -53,6 +53,7 @@ io.on('connection', async (socket) => {
 		//3- this emits to the client what has been received and the client writes it down
 		io.emit('chat message', {name: name, msg: msg, time: theTime, idMsg: newMessage.id, likes: newMessage.likes})
 		console.log(theTime + ' Today')
+		io.to(socket.id).emit('deleteMsgButton', {idMsg: newMessage.id})
 	})
 
 	socket.on('is typing', (userName) => {
