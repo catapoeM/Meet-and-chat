@@ -74,22 +74,20 @@ socket.on('chat message', function(data) {
 		upVotes(item)
 	});
 	item.appendChild(like)
+	if (userName == data.name) {
+		let deleteMessage = document.createElement('button')
+		deleteMessage.setAttribute('id', data.idMsg)
+		deleteMessage.innerText = 'Detele'
+		deleteMessage.style.cursor = 'pointer'
+		deleteMessage.style.color = 'red'
+		deleteMessage.addEventListener('click', function() {
+			deleteMsg(deleteMessage)
+		})
+		item.appendChild(deleteMessage)
+	}
 	message.appendChild(item);
 	scrollDown()
 });
-
-socket.on('deleteMsgButton', function(data) {
-	let deleteMessage = document.createElement('button')
-	deleteMessage.setAttribute('id', data.idMsg)
-	deleteMessage.innerText = 'Detele'
-	deleteMessage.style.cursor = 'pointer'
-	deleteMessage.style.color = 'red'
-	deleteMessage.addEventListener('click', function() {
-		deleteMsg(deleteMessage)
-	})
-	message.appendChild(deleteMessage)
-	scrollDown()
-})
 	
 function upVotes(item) {
 	let id = item.getAttribute('id')
@@ -155,22 +153,24 @@ socket.on('getAllMessages', function(data) {
 	}else if (data.likes > 1) {
 		like.innerText = data.likes + ' Likes'
 	}
-	
 	like.style.cursor = 'pointer';
 	like.style.color = 'blue'
 	like.addEventListener("click", function() {
 		like.setAttribute('likesNr', 0)
 		upVotes(item)
 	});
-	let deleteMessage = document.createElement('button')
-	deleteMessage.innerText = 'Detele'
-	deleteMessage.style.cursor = 'pointer'
-	deleteMessage.style.color = 'red'
-	deleteMessage.addEventListener('click', function() {
-		deleteMsg(item)
-	})
 	item.appendChild(like)
-	item.appendChild(deleteMessage)
+	if (userName == data.userName) {
+		let deleteMessage = document.createElement('button')
+		deleteMessage.setAttribute('id', data.idMsg)
+		deleteMessage.innerText = 'Detele'
+		deleteMessage.style.cursor = 'pointer'
+		deleteMessage.style.color = 'red'
+		deleteMessage.addEventListener('click', function() {
+			deleteMsg(deleteMessage)
+		})
+		item.appendChild(deleteMessage)
+	}
 	message.appendChild(item);
 	scrollDown()
 })
@@ -180,14 +180,16 @@ socket.on('alreadyLiked', function(data) {
 	let alertMessage = document.createElement('h3')
 	alertMessage.innerText = data.messageError
 	alertMessage.style.color = 'red'
-	likeMessageError.appendChild(alertMessage)
-	const timeOut = setTimeout(removeMessage, 3500)
-	function removeMessage() {
-		likeMessageError.removeChild(likeMessageError.firstElementChild)
-		stopTime()
-	}
-	function stopTime() {
-		clearTimeout(timeOut)
+	if (likeMessageError.childNodes.length < 2) { 
+		likeMessageError.appendChild(alertMessage)
+		const timeOut = setTimeout(removeMessage, 3500)
+		function removeMessage() {
+			likeMessageError.removeChild(likeMessageError.firstElementChild)
+			stopTime()
+		}
+		function stopTime() {
+			clearTimeout(timeOut)
+		}
 	}
 })
 
@@ -201,7 +203,6 @@ function deleteMsg(item) {
 			message.childNodes[i].style.color = 'grey'
 			socket.emit('deleteMessage', messageId)
 		}else if (messageId == item.getAttribute('id') && messageId != null && tagName == 'BUTTON') {
-			message.childNodes[i].removeAttribute('id')
 			message.childNodes[i].remove()
 			socket.emit('deleteMessage', messageId)
 		}
