@@ -42,7 +42,7 @@
 
 - Jemand tippt
 
-- -Upvotes (Likes) (in DB gespeichert)
+- Upvotes (Likes) (in DB gespeichert)
 
 - Nachricht löschen (Auch von DB)
 
