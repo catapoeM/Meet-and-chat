@@ -15,11 +15,11 @@
 
 - Someone is typing
 
-- Comment upvotes (Saved in DB)
+- Messages upvotes (Likes) (Saved in DB)
+
+- Delete Message (also from DB)
 
 # Future functions:
-
-- Delete Comment
 
 - Chat emoji
 
@@ -42,11 +42,11 @@
 
 - Jemand tippt
 
-- Kommentar-Upvotes (in DB gespeichert)
+- -Upvotes (Likes) (in DB gespeichert)
+
+- Nachricht löschen (Auch von DB)
 
 # Zukünftige Funktionen:
-
-- Kommentar löschen
 
 - Emoji-Chat
 
