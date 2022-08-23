@@ -1,6 +1,6 @@
 # Meet-and-chat (English)
 
--It is an chat application where you have to create an account, then login and chat with other people.
+-It is an chat application where you have to create an account, then login and chat with other users.
 # Functions:
 
 - Create account (saved in DB)
