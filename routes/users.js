@@ -16,6 +16,7 @@ router.use(express.urlencoded({ extended: true }));
 router.use(cookieParser())
 const SESS_NAME = 'sid'
 router.use(session({
+  httpOnly: true,
   name: SESS_NAME,
   secret: 'fdfrgeggt54gg65z65rh65',
   resave: false,  
@@ -39,7 +40,7 @@ const checkAuth = (req, res, next) => {
     next()
   }else {
     //console.log(' return login')
-    return res.redirect('/login')
+    res.redirect('/login')
   }
 }
 
@@ -49,7 +50,7 @@ const checkLoggedIn = (req, res, next) => {
   if (req.session.user) {
   store.get(req.session.user, function(err, session) {
     if (err) {
-      console.log(err)
+      return console.log(err)
     }else if (session) {
       const userId = session.uid
       //console.log(userId + ' userId ***')
@@ -68,7 +69,7 @@ const deleteSession = (req, res, next) => {
     if (err) {
       return res.render('login', { errorMsg: err } )
     }else {
-      console.log(userSession + ' destroyed from store')
+      return console.log(userSession + ' destroyed from store')
     }
   })
   req.session.destroy(function(err) {
@@ -103,7 +104,7 @@ router.post('/register', checkLoggedIn, (req, res) => {
       return res.render('register', { errorMsg: err })
     }
     else if (!err && found != null) {
-      res.render('register', { errorMsg: 'The username is already registered. Please choose another one!' } )
+      return res.render('register', { errorMsg: 'The username is already registered. Please choose another one!' } )
     }try {
       if (found == null && user.pass == repeatPass) {
         // Save user
@@ -120,7 +121,7 @@ router.post('/register', checkLoggedIn, (req, res) => {
         return res.render('register', { errorMsg: 'The "Repeat Password" must be the same as the "Password"' })
       }
     }catch(err) {
-      return res.render('register', { errorMsg: err })
+      res.render('register', { errorMsg: err })
     }
   })
   // Show all the registered users
@@ -129,7 +130,7 @@ router.post('/register', checkLoggedIn, (req, res) => {
 })
 
 router.get('/login', checkLoggedIn, (req, res) => {
-  return res.render('login')
+  res.render('login')
 })
 
 router.post('/login', checkLoggedIn, (req, res) => {
@@ -142,7 +143,7 @@ router.post('/login', checkLoggedIn, (req, res) => {
   userSchema.findOne({name: new RegExp('^'+ user.name +'$', 'i')}, async function (err, found) {
     console.log(found + " found")
     if (err) {
-      console.log('err: ' + err)
+      return console.log('err: ' + err)
     }
     if (found == null) {
       return res.render('login', { errorMsg: 'Username does not exist. Please register one!' } )
@@ -170,7 +171,7 @@ router.post('/login', checkLoggedIn, (req, res) => {
         return res.render('login', { errorMsg: 'Incorrect password. Please try again!' } )
       }
     }catch(err) {
-      return res.render('login', { errorMsg: err } )
+      res.render('login', { errorMsg: err } )
     }
   })
 })
@@ -188,12 +189,12 @@ router.get('/user/:id', checkAuth, (req, res) => {
       }
     })
   }catch(err) {
-    return res.render('login', { errorMsg: err + ' err 2'} )
+    res.render('login', { errorMsg: err + ' err 2'} )
   }
 })
 
 router.get('/logout', checkAuth, deleteSession, (req, res) => {
-  return res.redirect('/login')
+  res.redirect('/login')
 })
 
 router.delete('/user/:id', checkAuth, deleteSession, async (req, res) => {
