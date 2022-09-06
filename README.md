@@ -1,7 +1,7 @@
 # Meet-and-chat (English)
 
 -It is an chat application where you have to create an account, then login and chat with other users.
-Technologies used: ExpressJS, JavaScript, Mongoose(MongoDB), HTML, CSS
+Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CSS
 
 # Functions:
 
