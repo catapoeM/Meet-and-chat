@@ -20,6 +20,7 @@ socket.emit('userConnect', userName)
 function mainLoad() {
 	//socket.emit('Userdisconnect', name)
 	//alert('saveSession')
+	
 }
 
 socket.on('userConnected', function(data) {
@@ -176,6 +177,24 @@ socket.on('getAllMessages', function(data) {
 })
 
 socket.on('alreadyLiked', function(data) {
+	let likeMessageError = document.getElementById('likeMessageError')
+	let alertMessage = document.createElement('h3')
+	alertMessage.innerText = data.messageError
+	alertMessage.style.color = 'red'
+	if (likeMessageError.childNodes.length < 2) { 
+		likeMessageError.appendChild(alertMessage)
+		const timeOut = setTimeout(removeMessage, 3500)
+		function removeMessage() {
+			likeMessageError.removeChild(likeMessageError.firstElementChild)
+			stopTime()
+		}
+		function stopTime() {
+			clearTimeout(timeOut)
+		}
+	}
+})
+
+socket.on('anotherUser', function(data) {
 	let likeMessageError = document.getElementById('likeMessageError')
 	let alertMessage = document.createElement('h3')
 	alertMessage.innerText = data.messageError
