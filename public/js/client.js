@@ -63,7 +63,7 @@ form.addEventListener('submit', function(e) {
 //4- this event is received to be written down. (displaied)
 socket.on('chat message', function(data) {
 	var item = document.createElement('li');
-	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg;
+	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg + " 😀";
 	let like = document.createElement('li')
 	item.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
@@ -233,4 +233,22 @@ function scrollDown() {
 	if (messagesContainer.scrollHeight > messagesContainer.clientHeight) {
 		messagesContainer.scrollTop = messagesContainer.scrollHeight
 	}
+}
+
+function getEmoji() {
+
+	var popup = document.getElementById("myPopup");
+	for (let i = 0; i < 3; ++i) {
+		var tr = document.createElement('tr')
+		var td = document.createElement('td')
+		tr.appendChild(td)
+		for (let j = 0; j < 3; ++j) {
+			var text = document.createTextNode('😁')
+			td.appendChild(text)
+			
+		}
+		popup.appendChild(tr)
+		
+	}
+	popup.classList.toggle("show");
 }
