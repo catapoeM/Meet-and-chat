@@ -20,6 +20,7 @@ socket.emit('userConnect', userName)
 function mainLoad() {
 	//socket.emit('Userdisconnect', name)
 	//alert('saveSession')
+	getEmoji()
 	
 }
 
@@ -62,8 +63,9 @@ form.addEventListener('submit', function(e) {
 
 //4- this event is received to be written down. (displaied)
 socket.on('chat message', function(data) {
+	
 	var item = document.createElement('li');
-	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg + " 😀";
+	item.textContent = '( ' + data.time + ' ) ' + data.name + ": " + data.msg;
 	let like = document.createElement('li')
 	item.setAttribute('id', data.idMsg)
 	like.setAttribute('likesAmount', data.likes)
@@ -236,19 +238,22 @@ function scrollDown() {
 }
 
 function getEmoji() {
-
-	var popup = document.getElementById("myPopup");
-	for (let i = 0; i < 3; ++i) {
-		var tr = document.createElement('tr')
-		var td = document.createElement('td')
-		tr.appendChild(td)
-		for (let j = 0; j < 3; ++j) {
-			var text = document.createTextNode('😁')
-			td.appendChild(text)
-			
+	const emojis = ['🙂', '😀', '😁', '😆', '😂', '😉', '🥰', '😘', '😜']
+	var table = document.getElementById("table");
+	for (let i = 0, emoji_i = 0; i < 3; ++i) {
+		let row = table.insertRow(i)
+		for (let j = 0; j < 3; ++j, ++emoji_i) {
+			let cell = row.insertCell(j)
+			cell.innerText = emojis[emoji_i]
+			cell.setAttribute('id', emojis[emoji_i])
+			cell.addEventListener('click', function() {
+				input.value += cell.getAttribute('id')
+			})
 		}
-		popup.appendChild(tr)
-		
 	}
-	popup.classList.toggle("show");
+}
+
+function popUpEmoji() {
+	const table = document.getElementById("table");
+	table.classList.toggle("show");
 }
