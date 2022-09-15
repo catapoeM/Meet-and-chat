@@ -48,8 +48,8 @@ Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CS
 
 - Nachricht löschen (Auch von DB)
 
-# Zukünftige Funktionen:
-
 - Emoji-Chat
+
+# Zukünftige Funktionen:
 
 - Standort in Echtzeit
