@@ -25,7 +25,7 @@ Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CS
 
 # Future functions:
 
-- Real time location (API)
+- Real time location (Geo-Coordinates API)
 
 # Treffen und chatten (Deutsch)
 
@@ -52,4 +52,4 @@ Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CS
 
 # Zukünftige Funktionen:
 
-- Standort in Echtzeit (API)
+- Standort in Echtzeit (Geo-Koordination API)
