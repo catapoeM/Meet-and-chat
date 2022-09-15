@@ -21,9 +21,9 @@ Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CS
 
 - Delete Message (also from DB)
 
-# Future functions:
+- Emoji-chat
 
-- Chat emoji
+# Future functions:
 
 - Real time location
 
