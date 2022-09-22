@@ -100,6 +100,11 @@ io.on('connection', async (socket) => {
 			}
 		})
 	})
+
+	socket.on('userLocation', function(location) {
+		console.log(location)
+		io.emit('sendLocation', location)
+	})
 });
 // end of socket.io logic
 

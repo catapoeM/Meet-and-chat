@@ -13,7 +13,6 @@ let form = document.getElementById('form');
 let input = document.getElementById('input');
 let typing = document.getElementById('typing')
 let userName = document.getElementById('user').innerHTML
-let userLocation = ''
 
 function mainLoad() {
 	//socket.emit('Userdisconnect', name)
@@ -48,15 +47,30 @@ function mainLoad() {
 		Http.send();
 		Http.onreadystatechange = function () {
 			if (this.readyState == 4 && this.status == 200) {
-				let resonseJson = JSON.parse(this.responseText)
-					userLocation = resonseJson.city
-					userName = ' [' + userLocation + '] ' + userName
-					// Emit to the server the user connection
-					socket.emit('userConnect', userName)
+				const resonseJson = JSON.parse(this.responseText)
+				let location = resonseJson.city
+				location = userName + ' is connected from: ' + location
+				// Emit to the server the user connection
+				socket.emit('userLocation', location)
 			}
 		};
 	}
 }
+
+socket.on('sendLocation', function(location) {
+	let userLocation = document.getElementById('userLocation')
+	userLocation.append(location)
+	const timeOut = setTimeout(removeMessage, 5000)
+	function removeMessage() {
+		userLocation.removeChild(userLocation.lastChild)
+		stopTime()
+	}
+	function stopTime() {
+		clearTimeout(timeOut)
+	}
+})
+
+socket.emit('userConnect', userName)
 
 socket.on('userConnected', function(data) {
 	let status = document.getElementById('status')
