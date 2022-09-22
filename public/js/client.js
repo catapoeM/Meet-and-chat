@@ -13,9 +13,7 @@ let form = document.getElementById('form');
 let input = document.getElementById('input');
 let typing = document.getElementById('typing')
 let userName = document.getElementById('user').innerHTML
-
-// Emit to the server the user connection
-socket.emit('userConnect', userName)
+let userLocation = ''
 
 function mainLoad() {
 	//socket.emit('Userdisconnect', name)
@@ -50,11 +48,14 @@ function mainLoad() {
 		Http.send();
 		Http.onreadystatechange = function () {
 			if (this.readyState == 4 && this.status == 200) {
-					alert(this.responseText);
+				let resonseJson = JSON.parse(this.responseText)
+					userLocation = resonseJson.city
+					userName = ' [' + userLocation + '] ' + userName
+					// Emit to the server the user connection
+					socket.emit('userConnect', userName)
 			}
 		};
 	}
-
 }
 
 socket.on('userConnected', function(data) {
