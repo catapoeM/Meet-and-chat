@@ -59,7 +59,9 @@ function mainLoad() {
 
 socket.on('sendLocation', function(location) {
 	let userLocation = document.getElementById('userLocation')
-	userLocation.append(location)
+	let item = document.createElement('li')
+	item.innerHTML = location
+	userLocation.append(item)
 	const timeOut = setTimeout(removeMessage, 5000)
 	function removeMessage() {
 		userLocation.removeChild(userLocation.lastChild)
