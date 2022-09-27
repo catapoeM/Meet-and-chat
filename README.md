@@ -23,9 +23,11 @@ Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CS
 
 - Emoji-chat
 
+- Real time location [when someone is connecting] (Geolocation API)
+
 # Future functions:
 
-- Real time location (Geolocation API)
+-
 
 # Treffen und chatten (Deutsch)
 
@@ -50,6 +52,8 @@ Technologies used: JavaScript, ExpressJS, Socket.IO, Mongoose(MongoDB), HTML, CS
 
 - Emoji-Chat
 
+- Standort in Echtzeit[wenn sich jemand verbindet] (Geolocation API)
+
 # Zukünftige Funktionen:
 
-- Standort in Echtzeit (Geolocation API)
+-
