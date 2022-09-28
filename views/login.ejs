@@ -30,8 +30,10 @@
 				<a href="/register" title="Don't have an account? Then register here!">Register!</a>
 			</div>
 			<div class="container">
-				<% if(locals.errorMsg) { %>
+				<% if (locals.errorMsg) { %>
 					<div class="alert alert-danger" role="alert"><%= errorMsg %></div>
+				<% }else if (locals.msg) { %>
+					<div class="alert alert-success" role="alert"><%= msg %></div>
 				<% } %>
 			</div>
 		</form> 

@@ -116,7 +116,7 @@ router.post('/register', checkLoggedIn, (req, res) => {
         })
         newUser.save()
         console.log(newUser)
-        return res.render('register', { msg: 'You are successfully registered! You can now log in' })
+        return res.render('register', { msg: 'You are successfully registered! You can now ' })
       }else if (found == null && user.pass != repeatPass) {
         return res.render('register', { errorMsg: 'The "Repeat Password" must be the same as the "Password"' })
       }
@@ -202,7 +202,7 @@ router.delete('/user/:id', checkAuth, deleteSession, async (req, res) => {
     let user = await userSchema.findById(req.params.id)
     await user.remove()
     console.log("user with info -" + user + "has been deleted!")
-    return res.redirect('/login')
+    return res.render('login', { msg: 'Your account has been successfully deleted!'})
   }catch(err) {
     console.log(err)
   }
